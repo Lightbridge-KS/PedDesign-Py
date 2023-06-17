@@ -1,0 +1,13 @@
+---
+title: "Testing"
+format: html
+---
+
+```{python}
+import peddesign as pd
+```
+
+```{python}
+pd.design_ct("whole_abd", "younger_child", 6, "delay", 65)
+pd.design_chest("younger_child", 12)
+```
