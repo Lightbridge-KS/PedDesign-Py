@@ -4,6 +4,9 @@ format: html
 ---
 
 ```{python}
+import sys
+sys.path.insert(1, '..') 
+# print(sys.path)
 import peddesign as pd
 ```
 
