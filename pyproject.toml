@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peddesign"
+version = "0.0.1"
+description = ''
+authors = [{ name = "Kittipos Sirivongrungson", email = "ki11ip0.s.a.s@gmail.com" }]
+license = {text = "MIT"}
+keywords = []
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
