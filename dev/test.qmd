@@ -5,8 +5,8 @@ format: html
 
 ```{python}
 import sys
-sys.path.insert(1, '..') 
-# print(sys.path)
+sys.path.insert(1, '../src') 
+print(sys.path)
 import peddesign as pd
 ```
 
