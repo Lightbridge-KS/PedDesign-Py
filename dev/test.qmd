@@ -12,5 +12,20 @@ import peddesign as pd
 
 ```{python}
 pd.design_ct("whole_abd", "younger_child", 6, "delay", 65)
+```
+
+```{python}
 pd.design_chest("younger_child", 12)
+```
+
+```{python}
+
+study_type_dict = {
+    "CT Chest": "chest", 
+    "CTWA": "whole_abd", "CT Chest + WA": "chest_whole_abd", "CTA Liver": "cta_liver"
+}
+list(study_type_dict.keys())
+list(study_type_dict.values())
+
+study_type_dict["CT Chest"]
 ```

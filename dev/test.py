@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(1, '../src') # '/Users/kittipos/Documents/Radio-local/rad-proj/PedDesign-Py'
-# print(sys.path)
+print(sys.path)
 import peddesign as pd
 
 
