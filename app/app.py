@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-sys.path.insert(1, str(Path(".").absolute() / "src"))
+# sys.path.insert(1, str(Path(".").absolute() / "src"))
 
 import tkinter  
 import customtkinter  
