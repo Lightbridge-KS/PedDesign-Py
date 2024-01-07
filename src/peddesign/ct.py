@@ -1,152 +1,169 @@
 import math
 from ._child import *
+from ._designTemp import design_template
+
+# Design CT Chest
 
 
-# CT Chest
-def design_chest(age_group, weight_kg):
+class DesignCTchest:
+    """docstring for DesignCTchest."""
 
-    assert age_group in ["younger_child", "older_child"], "Invalid `age_group`, Please choose: 'younger_child' or 'older_child'"
-    
-    print("-- Design CT --", "\n")
-    print("CT chest, venous only")
-    # Weight
-    print("Body weight:", weight_kg, "kg")
-    
-    # kV
-    kV = get_kV(weight_kg)
-    print("kV:", kV)
-    # mA
-    print("mA: auto")
-    # Noise
-    noise_index = 17 if age_group == "younger_child" else 20
-    print("Noise index:", noise_index)
-    # Delay
-    print("Delay: 45 sec")
-    # Contrast
-    ml_kg = 1  # Chest
-    print_contrast(ml_kg=ml_kg, weight_kg=weight_kg)
-    # Rate
-    print_rate_ml_sec(
-        contrast_ml=get_contrast_ml(ml_kg=ml_kg, weight_kg=weight_kg),
-        rate_formula="no_delay"
-    )
-    print("\n---")
+    def __init__(self, weight_kg: float, is_first_study: bool = False) -> None:
+        # kV
+        kV = get_kV(weight_kg)
+        # Noise
+        noise_index = 17 if is_first_study else 20
+        # Contrast
+        ml_kg = 1  # Chest
+        contrast_calc = get_contrast_str(ml_kg=ml_kg, weight_kg=weight_kg)
+        # Rate
+        contrast_ml = get_contrast_ml(ml_kg, weight_kg)
+        rate = (contrast_ml + 15) / (45 - 15)
+        rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place
+        # Calc at the end
+        show_calc = f"({contrast_ml} + 15) / 30 = {round(rate, 3)}"
+        # Substitute Fmt String
+        self.str_design = design_template["chest"].format(weight_kg=weight_kg,
+                                                          kV=kV,
+                                                          noise_index=noise_index,
+                                                          contrast_calc=contrast_calc,
+                                                          rate_adj=rate_adj,
+                                                          show_calc=show_calc)
 
-# Whole Abdomen
+    def __str__(self):
+        return self.str_design
 
-def design_whole_abd(age_group, weight_kg, rate_formula="no_delay", delay_sec=None):
+    def __repr__(self) -> str:
+        return self.str_design
 
-    assert age_group in ["younger_child", "older_child"], "Invalid `age_group`, Please choose: 'younger_child' or 'older_child'"
-    assert rate_formula in ["no_delay", "delay"], "Invalid rate_formula argument. Please choose 'no_delay' or 'delay'."
+# Design CT Whole Abd
 
-    print("-- Design CT --", "\n")
-    print("CT whole abdomen, venous only")
-    # Weight
-    print("Body weight:", weight_kg, "kg")
-    
-    # kV
-    kV = get_kV(weight_kg)
-    print("kV:", kV)
-    # mA
-    print("mA: auto")
-    # Noise
-    noise_index = 15 if age_group == "younger_child" else 17
-    print("Noise index:", noise_index)
-    # Delay
-    if rate_formula == "no_delay":
-        print("Delay: 60 or 65 or 70 sec")
-    else:
-        print("Delay:", delay_sec)
-    
-    # Contrast
-    ml_kg = 2  # WA
-    print_contrast(ml_kg=ml_kg, weight_kg=weight_kg)
-    # Rate
-    print_rate_ml_sec(
-        contrast_ml=get_contrast_ml(ml_kg=ml_kg, weight_kg=weight_kg),
-        rate_formula=rate_formula,
-        delay_sec=delay_sec
-    )
-    print("\n---")
 
-# Chest + WA
+class DesignCTwholeAbd:
+    def __init__(self, weight_kg: float, is_first_study: bool = False, rate_formula="no_delay", delay_sec=None) -> None:
+        # kV
+        kV = get_kV(weight_kg)
+        # Noise
+        noise_index = 15 if is_first_study else 17
+        # Delay
+        if rate_formula == "no_delay":
+            delay_sec_calc = "60 or 65 or 70 sec"
+        else:
+            delay_sec_calc = f"{delay_sec} sec"
+        # Contrast
+        ml_kg = 2  # WA
+        contrast_calc = get_contrast_str(ml_kg=ml_kg, weight_kg=weight_kg)
+        # Rate
+        contrast_ml = get_contrast_ml(ml_kg=ml_kg, weight_kg=weight_kg)
+        # No delay
+        if rate_formula == "no_delay":
+            rate = (contrast_ml + 15) / 45
+            rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place
+            show_calc = f"({contrast_ml} + 15) / 45 = {round(rate, 3)}"
+        # Delay
+        else:
+            assert isinstance(delay_sec, (int, float)
+                              ), "`delay_sec` must be a number"
+            rate = (contrast_ml + 15) / (delay_sec - 20)
+            rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place
 
-def design_chest_whole_abd(age_group, weight_kg, rate_formula="no_delay", delay_sec=None):
+        show_calc = f"({contrast_ml} + 15) / ({delay_sec} - 20) = {round(rate, 3)}"
 
-    assert age_group in ["younger_child", "older_child"], "Invalid `age_group`, Please choose: 'younger_child' or 'older_child'"
-    assert rate_formula in ["no_delay", "delay"], "Invalid rate_formula argument. Please choose 'no_delay' or 'delay'."
+        # Substitute Fmt String
+        self.str_design = design_template["whole_abd"].format(weight_kg=weight_kg,
+                                                              kV=kV,
+                                                              noise_index=noise_index,
+                                                              delay_sec_calc=delay_sec_calc,
+                                                              contrast_calc=contrast_calc,
+                                                              rate_adj=rate_adj,
+                                                              show_calc=show_calc)
 
-    print("-- Design CT --", "\n")
-    print("Venous chest + whole abdomen")
-    # Weight
-    print("Body weight:", weight_kg, "kg")
-    
-    # kV
-    kV = get_kV(weight_kg)
-    print("kV:", kV)
-    # mA
-    print("mA: auto")
-    # Noise
-    noise_index = 15 if age_group == "younger_child" else 17
-    print("Noise index:", noise_index)
-    # Delay
-    if rate_formula == "no_delay":
-        print("Delay: 60 or 65 or 70 sec")
-    else:
-        print("Delay:", delay_sec)
-    
-    # Contrast
-    ml_kg = 2  # WA
-    print_contrast(ml_kg=ml_kg, weight_kg=weight_kg)
-    # Rate
-    print_rate_ml_sec(
-        contrast_ml=get_contrast_ml(ml_kg=ml_kg, weight_kg=weight_kg),
-        rate_formula=rate_formula,
-        delay_sec=delay_sec
-    )
-    print("\n---")
+    def __str__(self):
+        return self.str_design
+
+    def __repr__(self) -> str:
+        return self.str_design
+
+# CT Chest + WA
+
+
+class DesignCTchestWholeAbd:
+    def __init__(self, weight_kg: float, is_first_study: bool = False, rate_formula="no_delay", delay_sec=None) -> None:
+        # kV
+        kV = get_kV(weight_kg)
+        # Noise
+        noise_index = 15 if is_first_study else 17
+        # Delay
+        if rate_formula == "no_delay":
+            delay_sec_calc = "60 or 65 or 70 sec"
+        else:
+            delay_sec_calc = f"{delay_sec} sec"
+        # Contrast
+        ml_kg = 2  # WA
+        contrast_calc = get_contrast_str(ml_kg=ml_kg, weight_kg=weight_kg)
+        # Rate
+        contrast_ml = get_contrast_ml(ml_kg=ml_kg, weight_kg=weight_kg)
+        # No delay
+        if rate_formula == "no_delay":
+            rate = (contrast_ml + 15) / 45
+            rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place
+            show_calc = f"({contrast_ml} + 15) / 45 = {round(rate, 3)}"
+        # Delay
+        else:
+            assert isinstance(delay_sec, (int, float)
+                              ), "`delay_sec` must be a number"
+            rate = (contrast_ml + 15) / (delay_sec - 20)
+            rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place
+
+        show_calc = f"({contrast_ml} + 15) / ({delay_sec} - 20) = {round(rate, 3)}"
+
+        # Substitute Fmt String
+        self.str_design = design_template["chest_whole_abd"].format(weight_kg=weight_kg,
+                                                                    kV=kV,
+                                                                    noise_index=noise_index,
+                                                                    delay_sec_calc=delay_sec_calc,
+                                                                    contrast_calc=contrast_calc,
+                                                                    rate_adj=rate_adj,
+                                                                    show_calc=show_calc)
+
+    def __str__(self):
+        return self.str_design
+
+    def __repr__(self) -> str:
+        return self.str_design
 
 # CTA Liver
-def design_cta_liver(age_group, weight_kg):
-    assert age_group in ["younger_child", "older_child"], "Invalid `age_group`, Please choose: 'younger_child' or 'older_child'"
-
-    print("-- Design CT --", "\n")
-    print("CTA liver")
-    # Weight
-    print("Body weight:", weight_kg, "kg")
-    
-    # kV
-    kV = get_kV(weight_kg)
-    print("kV:", kV)
-    # mA
-    print("mA: auto")
-    # Noise
-    noise_index = 15 if age_group == "younger_child" else 17
-    print("Noise index:", noise_index)
-    # Delay
-    print("Delay: 20 sec (CTA); 70 sec (Venous)")
-    
-    # Contrast
-    ml_kg = 2.5  # Liver
-    print_contrast(ml_kg=ml_kg, weight_kg=weight_kg)
-    ml = get_contrast_ml(ml_kg=ml_kg, weight_kg=weight_kg)
-    
-    # Rate
-    rate = (ml + 15) / 20
-    rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place 
-    print(f"Rate: {rate_adj} ml/sec ({ml} + 15) / 20 = {round(rate, 3)}")
-    
-    print("\n---")
 
 
-# For Testing
-if __name__ == "__main__":
-    # Chest
-    design_chest("younger_child", 12)
-    # WA
-    design_whole_abd("younger_child", 12)
-    design_whole_abd("younger_child", 12, "delay", 70)
-    # Chest + WA
-    design_chest_whole_abd("younger_child", 12)
-    # Liver
-    design_cta_liver("younger_child", 20.5)
+class DesignCTAliver:
+    def __init__(self, weight_kg: float, is_first_study: bool = False) -> None:
+        # kV
+        kV = get_kV(weight_kg)
+        # Noise
+        noise_index = 15 if is_first_study else 17
+        # Delay
+        cta_time = 20
+        # Contrast
+        ml_kg = 2.5  # CTA liver
+        contrast_calc = get_contrast_str(ml_kg=ml_kg, weight_kg=weight_kg)
+        # Rate
+        contrast_ml = get_contrast_ml(ml_kg=ml_kg, weight_kg=weight_kg)
+        rate = (contrast_ml + 15) / cta_time
+        rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place
+        # Calc at the end
+        show_calc = f"({contrast_ml} + 15) / {cta_time} = {round(rate, 3)}"
+
+        # Substitute Fmt String
+        self.str_design = design_template["cta_liver"].format(weight_kg=weight_kg,
+                                                              kV=kV,
+                                                              noise_index=noise_index,
+                                                              cta_time=cta_time,
+                                                              contrast_calc=contrast_calc,
+                                                              rate_adj=rate_adj,
+                                                              show_calc=show_calc)
+
+    def __str__(self):
+        return self.str_design
+
+    def __repr__(self) -> str:
+        return self.str_design
