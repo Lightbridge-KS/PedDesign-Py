@@ -1,10 +1,13 @@
 import sys
 from pathlib import Path
 
-sys.path.insert(1, str(Path(".").absolute() / 'src'))
+sys.path.insert(1, str(Path(".").absolute() / "src"))
+import peddesign  # noqa: E402
+
 
 # print(Path(".").absolute()) # Project Root
 
-import peddesign as pd
 
-pd.design_ct("whole_abd", "younger_child", 6)
+peddesign.design_ct("whole_abd", 10)
+
+peddesign.design_ct_str("whole_abd", 10)
