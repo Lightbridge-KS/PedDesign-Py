@@ -66,8 +66,8 @@ class DesignCTwholeAbd:
                               ), "`delay_sec` must be a number"
             rate = (contrast_ml + 15) / (delay_sec - 20)
             rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place
+            show_calc = f"({contrast_ml} + 15) / ({delay_sec} - 20) = {round(rate, 3)}"
 
-        show_calc = f"({contrast_ml} + 15) / ({delay_sec} - 20) = {round(rate, 3)}"
 
         # Substitute Fmt String
         self.str_design = design_template["whole_abd"].format(weight_kg=weight_kg,
@@ -114,8 +114,7 @@ class DesignCTchestWholeAbd:
                               ), "`delay_sec` must be a number"
             rate = (contrast_ml + 15) / (delay_sec - 20)
             rate_adj = math.ceil(rate * 10) / 10  # Round up to 1 decimal place
-
-        show_calc = f"({contrast_ml} + 15) / ({delay_sec} - 20) = {round(rate, 3)}"
+            show_calc = f"({contrast_ml} + 15) / ({delay_sec} - 20) = {round(rate, 3)}"
 
         # Substitute Fmt String
         self.str_design = design_template["chest_whole_abd"].format(weight_kg=weight_kg,
